@@ -28,5 +28,5 @@ if __name__ == '__main__':
             'title': chap_title,
             'body': chap_body
         }
-    with open("../asset/reason_op_clean.json", 'w') as f:
+    with open("../asset/reason_op_clean.json", 'w', encoding='utf-8') as f:
         json.dump(book_text, f, indent=2, ensure_ascii=False)
