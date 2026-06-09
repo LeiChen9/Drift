@@ -1,14 +1,48 @@
-import json 
-import pdb
 import os
+import re
+import json
 from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
 
+OUTLINE_PATH = "asset/reason_op/outline.json"
+BOOK_PATH = "asset/reason_op/reason_op.json"
+OUTPUT_DIR = "asset/reason_op"
+
 client = OpenAI(
     api_key=os.environ.get('DEEPSEEK_API_KEY'),
     base_url="https://api.deepseek.com")
+
+
+def remove_citations(text):
+    text = re.sub(r'\s*\[\s*[\d,\s]+\s*\]\s*', ' ', text)
+    return re.sub(r'\s+', ' ', text).strip()
+
+
+def remove_references(paragraphs):
+    return [text for text in paragraphs if not text.startswith('[ ')]
+
+
+def extract_chapters(book_data):
+    chapters = {}
+    for chapter_key, chapter in book_data["book_tree"].items():
+        if chapter_key == "版权信息":
+            continue
+
+        chapter_id, title = chapter_key.split(maxsplit=1)
+        body = "".join(remove_references(chapter["paragraphs"]))
+        chapters[chapter_id] = {
+            "title": title,
+            "body": remove_citations(body),
+        }
+    return chapters
+
+
+def load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
 
 def generate_script(prompt):
     """调用 LLM 生成播客台本"""
@@ -23,10 +57,9 @@ def generate_script(prompt):
     return response.choices[0].message.content
 
 if __name__ == '__main__':
-    with open('asset/reason_op/outline.json') as f:
-        outline = json.load(f)
-    with open('asset/reason_op_clean.json') as f:
-        book_data = json.load(f)
+    outline = load_json(OUTLINE_PATH)
+    book_data = extract_chapters(load_json(BOOK_PATH))
+
     for episode in outline['episodes']:
         episode_id = episode['episode_id']
         if episode_id in ['EP01', 'EP02', 'EP03']:
@@ -43,7 +76,7 @@ if __name__ == '__main__':
 这篇文稿将直接输入给 TTS（文本转语音）引擎朗读，因此必须做到“纯净无杂质”：
 1. **纯粹的发音文本：** **绝对禁止**输出任何舞台指示、音效描述、情绪提示或副语言标记。
 2. **去结构化：** **绝对禁止**输出任何章节编号、小标题。所有段落之间的过渡必须通过你口语化的自然衔接（如：“聊完了这个，我们再来看看……”），而不是依靠视觉标题。
-3. **沉浸的叙述风格：** 严禁使用廉价的播客套话，仅做叙述。
+3. **平实的叙述风格：** 严禁使用廉价的播客套话，以及廉价的夸张形容词（比如极其、非常），仅做平视文本的叙述。
 
 **[Generation Protocol]**
 1. **逐段厚涂，极致解压：** 像拿着放大镜一样，**逐段落、逐个知识点**地进行口语化重绘。原书的每一个论据、每一个逻辑转折都必须保留。严禁使用“总而言之”、“概括来说”、“简单来说”进行浓缩。
@@ -71,9 +104,6 @@ if __name__ == '__main__':
 ```
 请直接输出台本正文，无需任何多余的解释与确认语。'''
         print(f'正在生成台本：{episode["title"]}...')
-        pdb.set_trace()
         script = generate_script(prompt)
-        pdb.set_trace()
-        with open(f'asset/reason_op/{episode_id}_script.txt', 'w') as f:
+        with open(f'{OUTPUT_DIR}/{episode_id}_script.txt', 'w', encoding="utf-8") as f:
             f.write(script)
-        pdb.set_trace()
