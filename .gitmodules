@@ -1,3 +1,6 @@
 [submodule "cosyvoice"]
 	path = cosyvoice
 	url = https://github.com/FunAudioLLM/CosyVoice.git
+[submodule "opencrew"]
+	path = opencrew
+	url = git@github.com:LeiChen9/OpenCrew.git
