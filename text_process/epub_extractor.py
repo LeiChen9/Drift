@@ -317,8 +317,8 @@ if __name__ == "__main__":
     parser.add_argument("--name", nargs="?", default="reason_op")
     args = parser.parse_args()
 
-    epub_path = f"../asset/{args.name}.epub"
-    output_path = f"../asset/{args.name}.json"
+    epub_path = f"../asset/{args.name}/{args.name}.epub"
+    output_path = f"../asset/{args.name}/{args.name}.json"
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(parse_epub(epub_path), f, ensure_ascii=False, indent=2)
