@@ -1,42 +1,70 @@
 #!/usr/bin/env python3
-import argparse
 from pathlib import Path
 
 import librosa
 import soundfile as sf
 
+import numpy as np
 
-def parse_time(s: str) -> float:
-    parts = s.split(':')
-    if len(parts) == 3:
-        h, m, sec = map(float, parts)
-        return h * 3600 + m * 60 + sec
-    if len(parts) == 2:
-        m, sec = map(float, parts)
-        return m * 60 + sec
-    return float(s)
+def trim_edges(
+    audio: np.ndarray,
+    sr: int,
+    *,
+    top_db: float = 30,
+    frame_length: int = 2048,
+    hop_length: int = 512,
+) -> np.ndarray:
+    """只去掉首尾静音，保留中间停顿"""
+    trimmed, _ = librosa.effects.trim(
+        audio,
+        top_db=top_db,
+        frame_length=frame_length,
+        hop_length=hop_length,
+    )
+    return trimmed
 
 
-def write_wav(path: Path, audio, sr: int):
-    sf.write(str(path), audio, sr, format='MP3')
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='截取音频并输出 wav')
-    parser.add_argument('input')
-    parser.add_argument('-o', '--output')
-    parser.add_argument('--start', default='0:06')
-    parser.add_argument('--end', default='28:10')
-    args = parser.parse_args()
-
-    inp = Path(args.input)
-    out = Path(args.output) if args.output else inp.with_name(f'{inp.stem}_clip.mp3')
+def split_audio(
+    input_path: str | Path,
+    num_chunks: int,
+    output_dir: str | Path | None = None,
+    *,
+    remove_blank: bool = True,
+    top_db: float = 30,
+) -> list[Path]:
+    inp = Path(input_path)
+    out_dir = Path(output_dir) if output_dir else inp.parent / f"{inp.stem}_chunks"
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     audio, sr = librosa.load(inp, sr=16000, mono=True)
-    total = len(audio) / sr
-    start_sec, end_sec = parse_time(args.start), parse_time(args.end)
-    start, end = int(start_sec * sr), min(int(end_sec * sr), len(audio))
 
-    write_wav(out, audio[start:end], sr)
-    actual = (end - start) / sr
-    print(f'源 {total/60:.1f}min | 请求 {args.start}~{args.end} | 实际 {actual:.1f}s | {out}')
+    if remove_blank:
+        audio = trim_edges(audio, sr, top_db=top_db)
+
+    total_samples = len(audio)
+    if total_samples == 0:
+        raise ValueError("去空白后音频为空，请调低 top_db 或关闭 remove_blank")
+
+    chunk_size = total_samples // num_chunks
+    outputs: list[Path] = []
+    for i in range(num_chunks):
+        start = i * chunk_size
+        end = total_samples if i == num_chunks - 1 else (i + 1) * chunk_size
+        chunk_path = out_dir / f"{inp.stem}_chunk_{i:02d}.mp3"
+        sf.write(str(chunk_path), audio[start:end], sr, format="MP3")
+        outputs.append(chunk_path)
+    return outputs
+
+
+if __name__ == "__main__":
+    # 直接改这里，不用 parser
+    input_mp3 = "asset/zhongqing/pure_vocal/buzaichang_ep3_vocal.wav"
+    num_chunks = 1
+
+    paths = split_audio(input_mp3, num_chunks, remove_blank=True, top_db=40)
+    total_sec = sum(
+        len(librosa.load(p, sr=16000)) / 16000 for p in paths
+    )
+    print(f"输入: {input_mp3} | 分块数: {num_chunks}")
+    for i, p in enumerate(paths):
+        print(f"  [{i}] {p}")
