@@ -10,6 +10,7 @@ warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
 
 def normalize_text(text: str) -> str:
+    text = text.replace("\u200b", "")
     return " ".join(text.split())
 
 
@@ -18,9 +19,13 @@ def make_soup(markup: str) -> BeautifulSoup:
     return soup if soup.find() else BeautifulSoup(markup, "html.parser")
 
 
+from pathlib import PurePosixPath
+
 def resolve_href(base_dir: str, href: str) -> tuple[str, Optional[str]]:
     file_part, fragment = urldefrag(href or "")
-    path = os.path.normpath(os.path.join(base_dir, unquote(file_part))) if file_part else ""
+    if not file_part:
+        return "", fragment or None
+    path = str(PurePosixPath(base_dir.replace("\\", "/"), unquote(file_part)))
     return path, fragment or None
 
 

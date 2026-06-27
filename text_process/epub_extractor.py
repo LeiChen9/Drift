@@ -249,8 +249,11 @@ def _extract_range(start, end, base_dir: str) -> tuple[list[str], list[dict[str,
 
     while cursor and cursor != end:
         name = getattr(cursor, "name", None)
-        if name in TEXT_TAGS and (text := _norm(cursor.get_text(" ", strip=True))):
-            paragraphs.append(text)
+        if name in TEXT_TAGS:
+            if name == "li" and cursor.find("p"):
+                pass
+            elif text := _norm(cursor.get_text(" ", strip=True)):
+                paragraphs.append(text)
         elif name == "img" and (src := cursor.get("src")):
             path, _ = _resolve(base_dir, src)
             images.append({"src": path or src, "alt": cursor.get("alt", "")})
@@ -311,16 +314,16 @@ def parse_epub(epub_path: str) -> dict[str, dict]:
 
 
 if __name__ == "__main__":
-    import argparse
+    from pathlib import Path
 
-    parser = argparse.ArgumentParser(description="EPUB 结构化解析器")
-    parser.add_argument("--name", nargs="?", default="reason_op")
-    args = parser.parse_args()
+    ROOT = Path(__file__).resolve().parent.parent
+    asset_name = "national_org"
+    book_name = "中国国家治理的制度逻辑_一个组织学研究"
 
-    epub_path = f"../asset/{args.name}/{args.name}.epub"
-    output_path = f"../asset/{args.name}/{args.name}.json"
+    epub_path = ROOT / "asset" / asset_name / f"{book_name}.epub"
+    output_path = ROOT / "asset" / asset_name / f"{book_name}.json"
 
     with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(parse_epub(epub_path), f, ensure_ascii=False, indent=2)
+        json.dump(parse_epub(str(epub_path)), f, ensure_ascii=False, indent=2)
 
     print(f"输出已保存到 {output_path}")
