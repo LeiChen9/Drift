@@ -3,15 +3,20 @@ import re
 import warnings
 from typing import Optional
 from urllib.parse import unquote, urldefrag
-import pdb
+
 from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
 
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
+CHAPTER_RE = re.compile(r"第(\d+)章")
+SKIP_RE = re.compile(r"版权|书名|目录|序言|附录|自序|第[一二三四五六七八九十百]+单元")
 
-def normalize_text(text: str) -> str:
-    text = text.replace("\u200b", "")
-    return " ".join(text.split())
+
+def normalize_chapter_title(title: str) -> str:
+    t = title.replace(" ", "").replace("\u3000", "")
+    for q in "''\u2018\u2019\u201c\u201d":
+        t = t.replace(q, "")
+    return t
 
 
 def make_soup(markup: str) -> BeautifulSoup:
@@ -37,42 +42,58 @@ def remove_citations(text: str) -> str:
 def remove_references(paragraphs: list[str]) -> list[str]:
     return [text for text in paragraphs if not text.startswith("[ ")]
 
-def extract_text(node) -> list[str]:
-    # 非字典直接空
-    if not isinstance(node, dict):
-        return []
 
+def extract_text(node: dict) -> list[str]:
     parts = []
-    
-    # 添加当前节点的标题和段落
-    if "title" in node and "paragraphs" in node:
-        parts.append(node["title"] + ': ' + "".join(node["paragraphs"]) + "\n")
-    elif "paragraphs" in node:
+    if node.get("paragraphs"):
         parts.append("".join(node["paragraphs"]) + "\n")
-    
-    # 递归处理子节点
-    # children 是字典，需要遍历其值
-    if "children" in node and isinstance(node["children"], dict):
-        for child_node in node["children"].values():
-            parts += extract_text(child_node) + ["\n"]
-    
+    for child in (node.get("children") or {}).values():
+        parts += extract_text(child)
     return parts
 
 
-def extract_chapters(book_data: dict) -> dict[str, dict[str, str]]:
-    chapters = {}
-    for chapter_key, chapter in book_data["book_tree"].items():
-        title = chapter_key.replace(" ", "")
-        if any(word in title for word in ["版权", "书名", '目录', '序言', '附录']):
+def _collect_chapters(
+    nodes: dict,
+    chapters: dict[int, dict],
+    order: list[int],
+) -> None:
+    for key, node in nodes.items():
+        if SKIP_RE.search(key.replace(" ", "")):
+            if node.get("children"):
+                _collect_chapters(node["children"], chapters, order)
             continue
-        pdb.set_trace()
-        all_paragraphs = extract_text(chapter)
-        body = "".join(remove_references(all_paragraphs))
-        chapters[title] = {
-            "title": title,
-            "body": remove_citations(body),
-        }
+
+        match = CHAPTER_RE.match(key)
+        if match:
+            num = int(match.group(1))
+            if num in chapters:
+                raise ValueError(f"重复章节序号：第{num}章（{key}）")
+            paragraphs = extract_text(node)
+            body = remove_citations("".join(remove_references(paragraphs)))
+            chapters[num] = {
+                "title": key,
+                "chapter_num": num,
+                "order": order[0],
+                "body": body,
+            }
+            order[0] += 1
+        elif node.get("children"):
+            _collect_chapters(node["children"], chapters, order)
+
+
+def extract_chapters(book_data: dict) -> dict[int, dict]:
+    """从 book_tree 递归提取所有「第N章」节点，按章号索引。"""
+    chapters: dict[int, dict] = {}
+    _collect_chapters(book_data["book_tree"], chapters, [0])
     return chapters
+
+
+def get_episode_text(chapters: dict[int, dict], chapter_nums: list[int]) -> str:
+    missing = [n for n in chapter_nums if n not in chapters]
+    if missing:
+        raise KeyError(f"章节不存在: {missing}")
+    return "\n\n".join(chapters[n]["body"] for n in sorted(chapter_nums))
+
 
 def split_chunks(text: str, max_chars: int = 4500) -> list[str]:
     paragraphs = [p.strip() for p in re.split(r"\n+", text) if p.strip()]

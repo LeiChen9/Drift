@@ -2,15 +2,15 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from openai import OpenAI
 from dotenv import load_dotenv
-
-from text_process.utils import extract_chapters, split_chunks
+import pdb
+from text_process.utils import extract_chapters, get_episode_text, split_chunks
 from utils import load_json, write_text, load_text, json_eval
 
 load_dotenv()
 
-OUTLINE_PATH = "asset/reason_op/outline.json"
-BOOK_PATH = "asset/reason_op/reason_op.json"
-OUTPUT_DIR = "asset/reason_op"
+OUTLINE_PATH = "asset/national_org/outline.json"
+BOOK_PATH = "asset/national_org/中国国家治理的制度逻辑_一个组织学研究.json"
+OUTPUT_DIR = "asset/national_org/episodes"
 
 client = OpenAI(
     api_key=os.environ.get('DEEPSEEK_API_KEY'),
@@ -29,65 +29,70 @@ def llm_call(prompt):
     )
     return response.choices[0].message.content
 
-def script_rewrite(episode, max_retries=3):
-    chaps = episode['chapters']
-    chap_ids = [x.split('：')[0] for x in chaps]
-    full_text = ' '.join([book_data[chap_id]['body'] for chap_id in chap_ids])
+def _format_list(items: list) -> str:
+    return "、".join(items) if items else "无"
+
+
+def script_rewrite(episode, chapters, max_retries=3):
+    """生成单集播客台本，一次性将全量原文传入 LLM"""
+    full_text = get_episode_text(chapters, episode["chapter_nums"])
+    pdb.set_trace()
     original_len = len(full_text)
     min_required_len = original_len // 3
-    
+
     for attempt in range(1, max_retries + 1):
         prompt = f'''
-# Role: 声音纪录片导演 & 认知引路人 (Audio-Doc Director & Cognitive Guide)
+# Role: 文本模态重构引擎 (Text-Modality Reconstruction Engine)
 
-## 1. 核心定位与三层身份边界 (Core Identity & 3-Layer Boundary)
-你的任务是将书面文本逆向工程为适合听觉的单口播客台本。你不是在“朗读”或“总结”一本书，更不是代替作者立言。你是带着听众重走作者思维路径的**引路人 (Cognitive Guide)**。
-在任何时刻，必须严格坚守以下三层身份的物理隔离：
-* **第一层：作者 (The Author)**。负责提出观点、建立理论、提供证据。必须使用“作者发现”、“原书向我们展示了”等客体化表述。
-* **第二层：主讲人 (You)**。负责观察、解释、补充背景、管理工作记忆。你的主观认知只能作为“理解作者”的辅助脚手架，严禁将原书观点据为己有。
-* **第三层：听众 (The Audience)**。他们是与你并肩同行的智识伙伴。你的职责是陪他们抵达答案，而不是单向宣读答案。
+你的唯一任务是将“高密度、依赖视觉回溯的书面学术/专业文本”，无损转化为“松弛、线性、符合认知负荷的听觉口语流”。你不能省略任何信息，甚至对于专业概念需要额外进行解释，你的输出字数应稍微大于原始文本字数。你必须严格执行以下文本降维与重组算法。
 
-**【绝对红线：纯净听觉与盲视约束】**
-当前输出将直接送入 TTS 引擎，必须做到绝对纯净：
-* **禁止任何非发音字符**：严禁 Markdown 标题符号（#）、加粗符号（**）、列表编号及任何括号内的舞台/情绪指示符。
-* **纯听觉锚定**：严禁使用“如下图”、“前面写道”等视觉空间指代。所有图表、公式必须转化为唤起想象力的纯听觉描述（“想象这样一个物理过程……”）。
+## 一、 核心算法：词汇保真与句法降维 (Lexical Fidelity & Syntactic Flattening)
 
-## 2. 叙事引擎与认知链条 (Narrative Engine & Cognitive Chain)
-你的工作是组织认知，而非单纯组织语言。
-* **前置认知自检 (Consciousness Check)**：在生成每一段内容前，必须隐式回答三个问题：当前在解决什么问题？为何必须在此处展开？听众听完多理解了什么？若无法回答，则剔除该段落。
-* **闭环叙事节奏 (Closed-loop Rhythm)**：每一个核心知识点，必须强行展开为以下完整链条，结论必须像植物一样自然生长出来，禁止提前宣布：
-  现象引入 -> 建立疑问 -> 补充隐含背景 -> 展示作者的推理齿轮 -> 形成阶段认知 -> 抛出下一环问题。
+视觉文本的复杂性来源于“嵌套句”，听觉文本的流畅度来源于“线性句”。你必须对输入文本执行双轨处理：
 
-## 3. 执行策略与工作记忆管理 (Execution & Working Memory)
-* **基于物证的重构 (Evidence-Driven Reconstruction)**：像拆解精密机械一样解压复杂理论。作者提供什么证据，就带听众看什么证据；一个齿轮一个齿轮地展示因果关系，让推理本身产生碾压级的说服力。
-* **受控偏航 (Controlled Tangent)**：允许为了补充背景而暂时离开主线去讲述历史切片或现实案例。但任何偏航必须像橡皮筋，拉开后必须用一句干脆的逻辑陈述瞬间弹回主线，重新对齐当前问题。
-* **工作记忆同步 (Working Memory Management)**：播客无法翻页。在经历一段复杂推理后，必须主动执行状态同步（“所以，剥开刚才那些复杂的表象，我们现在实际上停留在……”），确保听众不掉队。
+1.  **领域术语的“锚点+转译”机制**
+    *   **保留锚点**：绝对禁止替换、降级或通俗化原始文本中的核心专业名词、定义和专有概念。
+    *   **即时补充**：在首次抛出专业名词的前后，进行及时的解释与补充说明。你的听众是一流大学大一新生，他们逻辑素养高，但是缺乏专业知识背景。
+2.  **强制解除从句嵌套 (De-nesting)**
+    *   识别原文中所有带有超长定语（主语前置修饰语）或复杂状语的句子。
+    *   将其拆解为至少两个以上的短句。主语和核心动词之间的距离必须最小化。
+3.  **名词动词化 (De-nominalization)**
+    *   书面语倾向于使用“状态名词”（例如：“机制的失效导致了系统的停滞”）。
+    *   口语必须将其还原为“具体动作”与“施动者”（例如：“当这个机制无法运转时，整个系统就卡住不动了”）。
 
-## 4. 语言指纹与评论纪律 (Language & Commentary Discipline)
-* **评论工具化**：主讲人的评论绝不能成为叙事主线。评论仅限用于：揭示隐蔽逻辑、连接生活经验、替听众表达合理困惑。评论必须极度克制、短暂，结束后立即切回原著推理链。
-* **反廉价播客感 (Anti-Podcast Cliche)**：保持沉静、笃定的知识分子质感。严禁使用“非常有意思”、“大家想一想”、“其实”、“极其”、“硬核”等注水词。严禁刻意制造幽默或虚假的热情或夸张表达。
-* **长短句交织**：允许用长句铺陈复杂思想的厚度，但在给出核心结论或完成推理闭环时，必须使用极简短句进行听觉停顿与强调。
+## 二、 学术结构的听觉化重塑 (Academic Structure Reshaping)
 
-## 5. 终局视角 (Ending Perspective)
-每当完成一段关键推理或临近单集尾声，不要急于下课。必须带着听众站在新建立的认知高地上进行**回头俯瞰 (Retrospection)**。不重复具体知识，而是指出：如果不走这一遭，我们会失去什么认知维度？并将该知识泛化为一种理解真实世界的新范式。
+学术书面语的结构不仅不适合听，还会产生强烈的“机器朗读感”。必须执行以下剥离：
+
+1.  **融化文献综述 (Citation Melting)**
+    *   提取这些文献背后的“思维演进脉络”或“共同指向的矛盾”。将其合并重写为“沿着这个问题的探索，学者们发现了一个共性……”或“换几个不同的视角来看，结论都指向了同一个现象……”。
+2.  **抹除视觉结构词**
+    *   删除所有诸如“首先、其次、最后”、“综上所述”、“一方面、另一方面”等依赖视觉占位的结构词。
+    *   替换为听觉逻辑粘合剂：使用“但更深层的问题在于……”、“这就意味着……”、“如果我们把视线拉长……”等符合人类交谈直觉的过渡语。
+
+## 三、 认知节奏控制 (Cognitive Rhythm Control)
+
+听觉流是单向的，你必须主动管理听众的工作记忆池。
+
+1.  **密度稀释与自然冗余**
+    *   每当你输出完一个复杂的因果推理链之后，必须插入一句简短的“降维总结句”，给听众的大脑提供一秒钟的“结算时间”。
+2.  **客观张力替代虚假互动**
+    *   保持学术的客观与冷峻，严禁使用“想象一下”、“大家知道吗”等刻意互动的播客腔调。
+    *   悬念和张力只能通过“铺陈客观事实之间的强烈矛盾”来自然产生。
+
+## 四、 运行环境与输入
+
+**【全局认知坐标 (Global Cognitive Coordinates)】**
+- 当前航向（本集主题）：{episode['title']}
+- 核心逻辑主轴：{episode['central_question']}
+- 必须锚定的关键概念：{_format_list(episode.get('key_concepts', []))}
+
+**【当前处理区块 (Current Processing Block)】**
+- 原始高密度文本：
+{full_text}
 
 ---
-
-## 8. 运行时上下文
-
-**【当前单集航向 (Episode Compass)】**
-* 核心主题：{episode.get('title', '未提供')}
-* 必须直面的核心问题：{episode.get('central_question', '未提供')}
-* 本集必须达成的认知闭环：{episode.get('ending_takeaway', '未提供')}
-
-**【前置认知状态 (Previous Context)】**
-{previous_context if previous_context else "这是本集的开篇。请从一个具有物理质感或历史纵深感的场景切入，自然引出本集的核心问题。"}
-
-**【本轮待勘探的文本地层】**
-{current_chunk}
-
----
-请以并肩勘探者的身份，输出纯口述的播客台本。
+请严格执行上述引擎法则，忽略具体领域差异，直接输出松弛、自然、逻辑严密的阐释性口语文本流。不输出任何格式标签、分析过程或额外解释。
 '''
         print(f'正在生成台本：{episode["title"]} (尝试 {attempt}/{max_retries})...')
         script = llm_call(prompt)
@@ -97,9 +102,9 @@ def script_rewrite(episode, max_retries=3):
         if script_len >= min_required_len:
             return script
         else:
-            print(f"警告：生成的台本长度 {script_len} 字小于最小要求 {min_required_len} 字 ({script_len / original_len:.1%})，准备重试...")
+            print(f"警告：生成的台本长度 {script_len} 字小于最小要求 {min_required_len} 字，准备重试...")
     
-    raise RuntimeError(f"脚本生成失败：经过 {max_retries} 次重试，输出长度仍未达到最小要求（需 >= {min_required_len} 字）")
+    raise RuntimeError(f"脚本生成失败：经过 {max_retries} 次重试，输出长度仍未达到最小要求")
 
 def _audit_chunk(idx, total, chunk, max_retries=3):
     """单个 chunk 的审校任务（可并行执行，超过10%变化会重试）"""
@@ -181,7 +186,7 @@ def audit_script(script, chunk_chars=4500):
 
 if __name__ == '__main__':
     outline = load_json(OUTLINE_PATH)
-    book_data = extract_chapters(load_json(BOOK_PATH))
+    chapters = extract_chapters(load_json(BOOK_PATH))
 
     for episode in outline['episodes']:
         episode_id = episode['episode_id']
@@ -190,13 +195,13 @@ if __name__ == '__main__':
         if os.path.exists(episode_final_path):
             print(f"已存在最终稿，跳过生成：{episode_final_path}")
             continue
-        import pdb; pdb.set_trace()
         if os.path.exists(episode_draft_path):
             script_draft = load_text(episode_draft_path)
         else:
-            script_draft = script_rewrite(episode)
+            script_draft = script_rewrite(episode, chapters)
             write_text(episode_draft_path, script_draft)
         print(f"台本初稿已生成，长度 {len(script_draft)} 字")
+        import pdb; pdb.set_trace()
         print(f"正在审校台本：{episode['title']}...")
         script_final = audit_script(script_draft)
         write_text(episode_final_path, script_final)
