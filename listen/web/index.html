@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Echo</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <h1 class="site-title" id="site-title">Echo</h1>
+    <p class="series-title" id="series-title"></p>
+  </header>
+
+  <main class="layout">
+    <aside class="episode-panel">
+      <h2 class="panel-heading">选集</h2>
+      <ul class="episode-list" id="episode-list"></ul>
+    </aside>
+
+    <section class="player-panel">
+      <div class="now-playing" id="now-playing">
+        <p class="placeholder">请从左侧选择一集开始收听</p>
+      </div>
+      <audio id="audio" controls preload="metadata"></audio>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p id="status-text"></p>
+  </footer>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
