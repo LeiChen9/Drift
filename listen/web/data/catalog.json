@@ -1,0 +1,9 @@
+{
+  "series": [
+    {
+      "series_id": "neg_explain",
+      "book_title": "反对阐释",
+      "manifest": "/data/neg_explain/manifest.json"
+    }
+  ]
+}

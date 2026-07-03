@@ -1,0 +1,87 @@
+{
+  "series_id": "neg_explain",
+  "book_title": "反对阐释",
+  "updated_at": "2026-07-03",
+  "episodes": [
+    {
+      "episode_id": "EP01",
+      "title": "阐释的报复：为什么我们对艺术的过度解读正在毁掉审美？",
+      "central_question": "为什么现代批评中追求“意义”的冲动反而成为了对艺术体验的阻碍？",
+      "duration_sec": null,
+      "audio_path": "neg_explain/EP01.mp3",
+      "published": false
+    },
+    {
+      "episode_id": "EP02",
+      "title": "风格即意志：剥离装饰，艺术的灵魂如何呈现为身体？",
+      "central_question": "当我们将风格与内容视为不可分割的整体时，风格是如何作为艺术家的意志标记而存在的？",
+      "duration_sec": null,
+      "audio_path": "neg_explain/EP02.mp3",
+      "published": true
+    },
+    {
+      "episode_id": "EP03",
+      "title": "受难者的典范：现代艺术家为何取代了古代圣徒？",
+      "central_question": "为什么现代意识倾向于通过艺术家的痛苦和自我暴露来评估真理的可靠性？",
+      "duration_sec": null,
+      "audio_path": "neg_explain/EP03.mp3",
+      "published": false
+    },
+    {
+      "episode_id": "EP04",
+      "title": "结构与历史的交锋：科学冷静如何应对热带的忧郁？",
+      "central_question": "在追求科学客观性的结构分析与坚持历史道德评价的现实主义批评之间，艺术的真理性该如何安放？",
+      "duration_sec": null,
+      "audio_path": "neg_explain/EP04.mp3",
+      "published": false
+    },
+    {
+      "episode_id": "EP05",
+      "title": "叙事的叛逆：当戏剧和小说拒绝成为“故事”",
+      "central_question": "为什么现代前卫艺术必须通过摧毁情节和心理描写来寻找新的现实感？",
+      "duration_sec": null,
+      "audio_path": "neg_explain/EP05.mp3",
+      "published": false
+    },
+    {
+      "episode_id": "EP06",
+      "title": "公义的剧场：当大屠杀与悲剧在现代舞台相遇",
+      "central_question": "在悲剧已经消亡的时代，剧场是否还能承担起作为公共道德审判论坛的功能？",
+      "duration_sec": null,
+      "audio_path": "neg_explain/EP06.mp3",
+      "published": false
+    },
+    {
+      "episode_id": "EP07",
+      "title": "残酷的洗礼：罗贝尔·布勒松与感官的新秩序",
+      "central_question": "如何通过极端的节制与“残酷”的视觉冲击，在胶片上呈现人类灵魂的重负与神恩？",
+      "duration_sec": null,
+      "audio_path": "neg_explain/EP07.mp3",
+      "published": false
+    },
+    {
+      "episode_id": "EP08",
+      "title": "毁灭的美学：从戈达尔的哲学到科幻片的集体梦魇",
+      "central_question": "为什么现代人既迷恋戈达尔式的离碎叙事，又无法抗拒科幻电影中城市毁灭的壮观景观？",
+      "duration_sec": null,
+      "audio_path": "neg_explain/EP08.mp3",
+      "published": false
+    },
+    {
+      "episode_id": "EP09",
+      "title": "坎普的胜利：感官快乐的政治解放与地下艺术的崛起",
+      "central_question": "为什么“坎普”趣味这种对非自然、夸张之物的热爱，成为了现代人逃避严肃道德重负的出口？",
+      "duration_sec": null,
+      "audio_path": "neg_explain/EP09.mp3",
+      "published": false
+    },
+    {
+      "episode_id": "EP10",
+      "title": "新感受力的黎明：在六十年代的废墟上重建审美",
+      "central_question": "为什么文学不再是现代文化的典范，而一种跨越科学与艺术的新感受力正在重塑我们的意识？",
+      "duration_sec": null,
+      "audio_path": "neg_explain/EP10.mp3",
+      "published": false
+    }
+  ]
+}
