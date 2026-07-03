@@ -16,16 +16,16 @@ from engine import DEFAULT_PROMPT_TEXT, load_text_from_file, save_mp3, synthesiz
 from utils import load_json
 
 # === Config ===
-ASSET_DIR = ROOT / "asset/national_org"
+ASSET_DIR = ROOT / "asset/neg_explain"
 OUTLINE_PATH = ASSET_DIR / "outline.json"
 SCRIPT_DIR = ASSET_DIR / "episodes"
-OUTPUT_DIR = ROOT / "output/national_org"
+OUTPUT_DIR = ROOT / "output/neg_explain"
 
 MODEL_DIR = COSYVOICE_DIR / "pretrained_models/Fun-CosyVoice3-0.5B"
 PROMPT_WAV = ROOT / "asset/curr/bon_clean_clip.wav"
 PROMPT_TEXT = DEFAULT_PROMPT_TEXT
 
-SKIP_UNTIL_EP = 5
+SKIP_UNTIL_EP = 0
 STOP_IF_SCRIPT_MISSING = True
 
 
@@ -105,3 +105,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

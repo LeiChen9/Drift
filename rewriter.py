@@ -1,4 +1,6 @@
 import os
+import ctypes
+import winsound
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -197,10 +199,12 @@ if __name__ == '__main__':
         if os.path.exists(episode_draft_path):
             script_draft = load_text(episode_draft_path)
         else:
-            pdb.set_trace()
             script_draft = script_rewrite(episode, sections)
             write_text(episode_draft_path, script_draft)
         print(f"台本初稿已生成，长度 {len(script_draft)} 字")
         print(f"正在审校台本：{episode['title']}...")
         script_final = audit_script(script_draft)
         write_text(episode_final_path, script_final)
+
+    winsound.MessageBeep(winsound.MB_ICONEXCLAMATION)
+    ctypes.windll.user32.MessageBoxW(0, "Rewriter 执行完毕", "Echo", 0x40)
