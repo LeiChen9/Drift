@@ -1,0 +1,23 @@
+/*
+  HTML: always revalidate so users pick up new asset links after deploy.
+  JSON: no-cache — content changes without filename changes.
+  Versioned JS/CSS (?v=...): long cache — URL changes each deploy.
+*/
+
+/index.html
+  Cache-Control: no-cache, must-revalidate
+
+/series.html
+  Cache-Control: no-cache, must-revalidate
+
+/play.html
+  Cache-Control: no-cache, must-revalidate
+
+/data/*
+  Cache-Control: no-cache, must-revalidate
+
+/config.json
+  Cache-Control: no-cache, must-revalidate
+
+/asset-version.json
+  Cache-Control: no-cache, must-revalidate

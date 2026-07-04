@@ -1,0 +1,9 @@
+{
+  "name": "echo-listen",
+  "private": true,
+  "scripts": {
+    "stamp": "node scripts/stamp-version.mjs",
+    "deploy": "node scripts/stamp-version.mjs && wrangler deploy",
+    "dev": "python3 -m http.server 8080 --directory web"
+  }
+}

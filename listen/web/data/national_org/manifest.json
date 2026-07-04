@@ -1,0 +1,71 @@
+{
+  "series_id": "national_org",
+  "book_title": "中国国家治理的制度逻辑：一个组织学研究",
+  "updated_at": "2026-07-04",
+  "episodes": [
+    {
+      "episode_id": "EP01",
+      "title": "大一统的重负：中国国家治理的底层矛盾",
+      "central_question": "为什么“一统体制”与“有效治理”之间的深刻矛盾是中国国家治理的核心挑战？",
+      "duration_sec": null,
+      "audio_path": "national_org/national_org_ep1.mp3",
+      "published": true
+    },
+    {
+      "episode_id": "EP02",
+      "title": "皇权的影子：中国官僚体制的合法性之谜",
+      "central_question": "中国官僚体制与西方“韦伯式”官僚制有何本质区别，它的权力究竟源自何处？",
+      "duration_sec": null,
+      "audio_path": "national_org/national_org_ep2.mp3",
+      "published": true
+    },
+    {
+      "episode_id": "EP03",
+      "title": "谁在指挥？治理模式背后的“控制权”博弈",
+      "central_question": "在具体政务中，政府内部如何通过目标设定、检查验收、激励分配这三项权力的拆分来实现控制？",
+      "duration_sec": null,
+      "audio_path": "china_governance/EP03.mp3",
+      "published": false
+    },
+    {
+      "episode_id": "EP04",
+      "title": "治理的“突击挡”：为什么运动式治理挥之不去？",
+      "central_question": "运动式治理是如何作为一种修复机制，解决常规官僚体制无法克服的组织失败的？",
+      "duration_sec": null,
+      "audio_path": "china_governance/EP04.mp3",
+      "published": false
+    },
+    {
+      "episode_id": "EP05",
+      "title": "猫鼠游戏的规则：谈判、共谋与基层政治的真相",
+      "central_question": "为什么基层政府间的“共谋”不仅无法杜绝，反而是维持体制象征性权威的必要条件？",
+      "duration_sec": null,
+      "audio_path": "china_governance/EP05.mp3",
+      "published": false
+    },
+    {
+      "episode_id": "EP06",
+      "title": "拼凑出的秩序：基层政府的“救火”式生存策略",
+      "central_question": "在多重冲突的任务和匮乏的资源面前，基层政府是如何通过“拼凑”和“向下攫取”来维持平衡的？",
+      "duration_sec": null,
+      "audio_path": "china_governance/EP06.mp3",
+      "published": false
+    },
+    {
+      "episode_id": "EP07",
+      "title": "乡村遭遇官僚制：修路、选举与被重塑的社会",
+      "central_question": "当国家政策强力介入乡村时，地方社会逻辑是如何扭曲或重塑这些政策，并最终付出代价的？",
+      "duration_sec": null,
+      "audio_path": "china_governance/EP07.mp3",
+      "published": false
+    },
+    {
+      "episode_id": "EP08",
+      "title": "秩序的挑战与未来：无组织的集体行动与治理转型",
+      "central_question": "在缺乏独立组织的情况下，散乱的社会不满是如何通过制度逻辑被系统地转化为集体行动的？中国治理的效率与稳定之困何在？",
+      "duration_sec": null,
+      "audio_path": "china_governance/EP08.mp3",
+      "published": false
+    }
+  ]
+}
