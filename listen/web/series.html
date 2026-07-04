@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Echo — 选集</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="header">
+    <a class="site-title-link" href="./index.html">
+      <h1 class="site-title">Echo</h1>
+    </a>
+    <p class="series-title" id="series-title"></p>
+  </header>
+
+  <main class="series-main">
+    <section class="series-hero">
+      <a class="link-button" href="./index.html">← 返回书库</a>
+      <h2 id="book-title"></h2>
+      <p class="book-desc" id="book-desc"></p>
+    </section>
+
+    <section class="episode-section" aria-labelledby="episode-heading">
+      <h3 class="section-heading" id="episode-heading">全部集数</h3>
+      <ul class="episode-list" id="episode-list"></ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p id="status-text"></p>
+  </footer>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

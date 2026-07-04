@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Echo — 播放</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="play-body">
+  <header class="header header-minimal">
+    <a class="link-button" id="back-to-series" href="./index.html">← 返回</a>
+    <p class="series-title series-title-center" id="series-title"></p>
+  </header>
+
+  <main class="play-main">
+    <section class="player-shell" id="player-shell">
+      <div class="player-art" id="player-art">
+        <span class="player-art-letter" id="player-art-letter">E</span>
+      </div>
+
+      <div class="player-meta">
+        <p class="player-book" id="player-book"></p>
+        <h2 class="player-title" id="player-title">加载中…</h2>
+        <p class="player-subtitle" id="player-subtitle"></p>
+      </div>
+
+      <div class="player-controls">
+        <div class="progress-row">
+          <span class="time-label" id="time-current">0:00</span>
+          <input
+            type="range"
+            class="progress-bar"
+            id="progress-bar"
+            min="0"
+            max="1000"
+            value="0"
+            aria-label="播放进度"
+          />
+          <span class="time-label" id="time-duration">0:00</span>
+        </div>
+
+        <div class="transport-row">
+          <button type="button" class="transport-btn" id="btn-prev" aria-label="上一集">⏮</button>
+          <button type="button" class="transport-btn transport-btn-primary" id="btn-play" aria-label="播放">▶</button>
+          <button type="button" class="transport-btn" id="btn-next" aria-label="下一集">⏭</button>
+        </div>
+      </div>
+
+      <audio id="audio" preload="metadata"></audio>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p id="status-text"></p>
+  </footer>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

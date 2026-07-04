@@ -3,7 +3,16 @@
     {
       "series_id": "neg_explain",
       "book_title": "反对阐释",
-      "manifest": "/data/neg_explain/manifest.json"
+      "manifest": "/data/neg_explain/manifest.json",
+      "cover": "/data/neg_explain/cover.jpg",
+      "description": "《反对阐述》是苏珊·桑塔格的文集，桑塔格认为对艺术的阐释在某种程度上扼杀了人们的审美体验空间，也是一种对话语权的垄断。或许我们在面对世界与世界的造物时，应该更多地去感受，而不是去解释，或者寻求解释。"
+    },
+    {
+      "series_id": "national_org",
+      "book_title": "中国国家治理的制度逻辑（周雪光）",
+      "manifest": "/data/national_org/manifest.json",
+      "cover": "/data/national_org/cover.jpg",
+      "description": "周雪光老师从组织学的角度探寻了国家治理中的不同角色及其关系，但这里的理论可以被应用到所有的组织中，听完这本书，相信你对你在组织中的经历，你的上下级的行动逻辑会有更深的了解和理解。"
     }
   ]
 }

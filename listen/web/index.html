@@ -1,28 +1,54 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Echo</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Echo — 听完整本书的播客</title>
+  <link rel="stylesheet" href="./style.css?v=2" />
 </head>
 <body>
   <header class="header">
-    <h1 class="site-title" id="site-title">Echo</h1>
-    <p class="series-title" id="series-title"></p>
+    <a class="site-title-link" href="./index.html">
+      <h1 class="site-title">Echo</h1>
+    </a>
+    <p class="series-title">通过播客，完整听完一本书</p>
   </header>
 
-  <main class="layout">
-    <aside class="episode-panel">
-      <h2 class="panel-heading">选集</h2>
-      <ul class="episode-list" id="episode-list"></ul>
-    </aside>
-
-    <section class="player-panel">
-      <div class="now-playing" id="now-playing">
-        <p class="placeholder">请从左侧选择一集开始收听</p>
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <h2>通过播客，完整听完一本书</h2>
+        <p>
+          我们不是摘抄、概括或评价，而是信息的重新整理与编织。我们用轻松、日常、聊天式的叙述方式，
+          把整本书的内容完整地呈现出来，让你在日常的间隙，也能完整地走完作者引领的整个旅程。
+        </p>
+        <p class="hint">下面是当前支持的书目，点击卡片查看集数列表并开始收听。</p>
       </div>
-      <audio id="audio" controls preload="metadata"></audio>
+    </section>
+
+    <section id="series-cards-wrap" class="cards-wrap">
+      <div id="series-cards" class="card-grid" aria-live="polite">
+        <a class="series-card-link" href="./series.html?series=neg_explain">
+          <article class="series-card">
+            <div class="card-cover">反</div>
+            <div class="card-body">
+              <h3>反对阐释</h3>
+              <p class="card-desc">《反对阐述》是苏珊·桑塔格的文集，桑塔格认为对艺术的阐释在某种程度上扼杀了人们的审美体验空间，也是一种对话语权的垄断。或许我们在面对世界与世界的造物时，应该更多地去感受，而不是去解释，或者寻求解释。</p>
+              <span class="card-link">查看集数 →</span>
+            </div>
+          </article>
+        </a>
+        <a class="series-card-link" href="./series.html?series=national_org">
+          <article class="series-card">
+            <div class="card-cover">中</div>
+            <div class="card-body">
+              <h3>中国国家治理的制度逻辑（周雪光）</h3>
+              <p class="card-desc">周雪光老师从组织学的角度探寻了国家治理中的不同角色及其关系，但这里的理论可以被应用到所有的组织中，听完这本书，相信你对你在组织中的经历，你的上下级的行动逻辑会有更深的了解和理解。</p>
+              <span class="card-link">查看集数 →</span>
+            </div>
+          </article>
+        </a>
+      </div>
     </section>
   </main>
 
@@ -30,6 +56,26 @@
     <p id="status-text"></p>
   </footer>
 
-  <script src="app.js" type="module"></script>
+  <script id="catalog-data" type="application/json">
+{
+  "series": [
+    {
+      "series_id": "neg_explain",
+      "book_title": "反对阐释",
+      "manifest": "/data/neg_explain/manifest.json",
+      "cover": "/data/neg_explain/cover.jpg",
+      "description": "《反对阐述》是苏珊·桑塔格的文集，桑塔格认为对艺术的阐释在某种程度上扼杀了人们的审美体验空间，也是一种对话语权的垄断。或许我们在面对世界与世界的造物时，应该更多地去感受，而不是去解释，或者寻求解释。"
+    },
+    {
+      "series_id": "national_org",
+      "book_title": "中国国家治理的制度逻辑（周雪光）",
+      "manifest": "/data/national_org/manifest.json",
+      "cover": "/data/national_org/cover.jpg",
+      "description": "周雪光老师从组织学的角度探寻了国家治理中的不同角色及其关系，但这里的理论可以被应用到所有的组织中，听完这本书，相信你对你在组织中的经历，你的上下级的行动逻辑会有更深的了解和理解。"
+    }
+  ]
+}
+  </script>
+  <script type="module" src="./app.js?v=2"></script>
 </body>
 </html>
