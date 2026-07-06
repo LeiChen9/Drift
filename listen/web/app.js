@@ -475,7 +475,7 @@ function loadEpisode(episode, autoplay) {
     }
   }
 
-  document.title = `${title} — Echo`;
+  document.title = `${title} — Susur`;
 
   const mediaUrl = resolveMediaUrl(episode);
   if (!els.audio) return;
