@@ -27,9 +27,26 @@ const els = {
   timeDuration: document.getElementById("time-duration"),
   btnPlay: document.getElementById("btn-play"),
   btnPrev: document.getElementById("btn-prev"),
+  btnRewind: document.getElementById("btn-rewind"),
+  btnForward: document.getElementById("btn-forward"),
   btnNext: document.getElementById("btn-next"),
   audio: document.getElementById("audio")
 };
+
+function seekAudioBy(offsetSeconds) {
+  const audio = els.audio;
+  if (!audio || !Number.isFinite(offsetSeconds)) return;
+
+  const duration = audio.duration;
+  let targetTime = audio.currentTime + offsetSeconds;
+  if (targetTime < 0) targetTime = 0;
+  if (Number.isFinite(duration) && duration > 0 && targetTime > duration) {
+    targetTime = duration;
+  }
+
+  audio.currentTime = targetTime;
+  updateProgressUi();
+}
 
 const paths = {
   siteConfig: "./config.json",
@@ -398,6 +415,14 @@ function bindAudioEvents() {
         loadEpisode(published[state.currentIndex - 1], true);
       }
     });
+  }
+
+  if (els.btnRewind) {
+    els.btnRewind.addEventListener("click", () => seekAudioBy(-15));
+  }
+
+  if (els.btnForward) {
+    els.btnForward.addEventListener("click", () => seekAudioBy(15));
   }
 
   if (els.btnNext) {
