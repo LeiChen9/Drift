@@ -5,7 +5,7 @@ from pathlib import Path
 
 from core.config import get_project_config, ROOT
 from core.utils import load_json
-from script.epub_builder import build_epub
+from ingest.epub_builder import build_epub
 
 
 def main():

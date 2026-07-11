@@ -29,9 +29,9 @@ def build_epub(
         oebps = tmpdir / "OEBPS"
         oebps.mkdir(parents=True)
 
-        page_refs = _write_pages(oebps, groups)
-        _write_nav(oebps, book_tree, title)
-        _write_opf(oebps, title, lang, uid, page_refs)
+        href_file_map = _write_pages(oebps, groups, lang)
+        _write_nav(oebps, book_tree, title, href_file_map, lang)
+        _write_opf(oebps, title, lang, uid, list(href_file_map.values()))
 
         _zip_epub(tmpdir, output_path)
     finally:
@@ -79,13 +79,13 @@ def _write_container(tmpdir: Path):
     (meta_inf / "container.xml").write_text(xml, encoding="utf-8")
 
 
-def _write_pages(oebps: Path, groups: OrderedDict) -> list[str]:
-    page_refs: list[str] = []
+def _write_pages(oebps: Path, groups: OrderedDict, lang: str = "zh") -> dict[str, str]:
+    href_file_map: dict[str, str] = {}
 
     for href, sections in groups.items():
         if not href:
             continue
-        fname = _xhtml_name(href, page_refs)
+        fname = _xhtml_name(href, list(href_file_map.values()))
 
         parts = []
         for sec in sections:
@@ -99,16 +99,18 @@ def _write_pages(oebps: Path, groups: OrderedDict) -> list[str]:
                 parts.append(f'<p><img src="{xml_escape(src)}" alt="{alt}"/></p>')
 
         html = f"""<?xml version="1.0" encoding="UTF-8"?>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head><title>{xml_escape(sections[0]["title"])}</title></head>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{xml_escape(lang)}" lang="{xml_escape(lang)}">
+<head>
+<title>{xml_escape(sections[0]["title"])}</title>
+</head>
 <body>
 {''.join(parts)}
 </body>
 </html>"""
         (oebps / fname).write_text(html, encoding="utf-8")
-        page_refs.append(fname)
+        href_file_map[href] = fname
 
-    return page_refs
+    return href_file_map
 
 
 def _xhtml_name(href: str, existing: list[str]) -> str:
@@ -124,13 +126,17 @@ def _xhtml_name(href: str, existing: list[str]) -> str:
     return name
 
 
-def _write_nav(oebps: Path, tree: dict, title: str):
-    items = _nav_items(tree)
+def _write_nav(oebps: Path, tree: dict, title: str, href_file_map: dict[str, str], lang: str = "zh"):
+    items = _nav_items(tree, href_file_map)
     nav_lis = "\n".join(items)
 
     html = f"""<?xml version="1.0" encoding="UTF-8"?>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
-<head><title>{xml_escape(title)}</title></head>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:epub="http://www.idpf.org/2007/ops"
+      xml:lang="{xml_escape(lang)}" lang="{xml_escape(lang)}">
+<head>
+<title>{xml_escape(title)}</title>
+</head>
 <body>
   <nav epub:type="toc">
     <h1>{xml_escape(title)}</h1>
@@ -143,17 +149,18 @@ def _write_nav(oebps: Path, tree: dict, title: str):
     (oebps / "nav.xhtml").write_text(html, encoding="utf-8")
 
 
-def _nav_items(tree: dict, indent: int = 2) -> list[str]:
+def _nav_items(tree: dict, href_file_map: dict[str, str], indent: int = 2) -> list[str]:
     lines = []
     sp = "  " * indent
     for key, node in tree.items():
         href = node.get("href", "")
-        href_attr = f' href="{xml_escape(href)}"' if href else ""
+        actual = href_file_map.get(href, "") if href else ""
+        href_attr = f' href="{xml_escape(actual)}"' if actual else ""
         lines.append(f'{sp}<li><a{href_attr}>{xml_escape(key)}</a>')
         children = node.get("children")
         if children:
             lines.append(f"{sp}<ol>")
-            lines.extend(_nav_items(children, indent + 2))
+            lines.extend(_nav_items(children, href_file_map, indent + 2))
             lines.append(f"{sp}</ol>")
         lines.append(f"{sp}</li>")
     return lines
@@ -162,10 +169,11 @@ def _nav_items(tree: dict, indent: int = 2) -> list[str]:
 def _write_opf(oebps: Path, title: str, lang: str, uid: str, page_refs: list[str]):
     manifest_items = []
 
-    def add_item(id_: str, href: str, mtype: str):
-        manifest_items.append(f'    <item id="{id_}" href="{href}" media-type="{mtype}"/>')
+    def add_item(id_: str, href: str, mtype: str, props: str = ""):
+        attr = f' properties="{props}"' if props else ""
+        manifest_items.append(f'    <item id="{id_}" href="{href}" media-type="{mtype}"{attr}/>')
 
-    add_item("nav", "nav.xhtml", "application/xhtml+xml")
+    add_item("nav", "nav.xhtml", "application/xhtml+xml", props="nav")
     for idx, ref in enumerate(page_refs, 1):
         add_item(f"p{idx}", ref, "application/xhtml+xml")
 
@@ -176,7 +184,10 @@ def _write_opf(oebps: Path, title: str, lang: str, uid: str, page_refs: list[str
     )
 
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="book-id">
+<package xmlns="http://www.idpf.org/2007/opf"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:dcterms="http://purl.org/dc/terms/"
+         version="3.0" unique-identifier="book-id">
   <metadata>
     <dc:identifier id="book-id">{xml_escape(uid)}</dc:identifier>
     <dc:title>{xml_escape(title)}</dc:title>
@@ -200,13 +211,13 @@ def _now() -> str:
 
 
 def _zip_epub(src_dir: Path, output_path: str | Path):
+    import zipfile
+
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    import zipfile
-
     with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zf:
-        zf.write(src_dir / "mimetype", "mimetype", compress_type=zipfile.ZIP_STORED)
+        zf.writestr(zipfile.ZipInfo("mimetype"), "application/epub+zip", compress_type=zipfile.ZIP_STORED)
         for root, _dirs, files in os.walk(src_dir):
             for fname in files:
                 fpath = Path(root) / fname
