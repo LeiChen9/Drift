@@ -6,6 +6,7 @@ from core.utils import load_json, read_text, write_text
 from script.rewriter import script_rewrite
 from script.auditor import audit_script
 from script.utils import extract_sections
+import pdb
 
 PROJECT = "division_of_labor"  # ← 改这里切换项目
 
@@ -38,6 +39,7 @@ def main():
         print(f"正在审校台本：{episode['title']}...")
         script_final = audit_script(script_draft)
         write_text(final_path, script_final)
+        pdb.set_trace()
 
     print("脚本生成完成")
 
