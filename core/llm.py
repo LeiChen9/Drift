@@ -28,7 +28,6 @@ def llm_call(prompt: str, client: OpenAI | None = None) -> str:
         reasoning_effort="high",
         extra_body={"thinking": {"type": "enabled"}},
     )
-    import pdb; pdb.set_trace()
     return response.choices[0].message.content
 
 if __name__ == "__main__":

@@ -90,6 +90,27 @@ def extract_sections(book_data: dict) -> dict[str, dict]:
     return sections
 
 
+def get_supplementary_text(sections: dict[str, dict], supplementary: list[dict]) -> str:
+    """根据 outline 中的 supplementary_sections 提取对应原文，返回格式化文本。"""
+    if not supplementary:
+        return ""
+    parts: list[str] = []
+    for item in supplementary:
+        norm = normalize_chapter_title(item["source"])
+        if norm not in sections:
+            continue
+        quote = item.get("quote", "")
+        context = item.get("context", "")
+        body = sections[norm]["body"]
+        parts.append(f"[来源：{item['source']}]")
+        if context:
+            parts.append(f"[用途：{context}]")
+        if quote:
+            parts.append(f"[核心引用：{quote}]")
+        parts.append(f"[全文]\n{body}")
+    return "\n\n---\n\n".join(parts)
+
+
 def get_episode_text(sections: dict[str, dict], titles: list[str]) -> str:
     missing: list[str] = []
     bodies: list[str] = []
