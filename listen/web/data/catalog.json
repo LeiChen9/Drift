@@ -13,6 +13,12 @@
       "manifest": "/data/national_org/manifest.json",
       "cover": "/data/national_org/cover.jpg",
       "description": "周雪光老师从组织学的角度探寻了国家治理中的不同角色及其关系，但这里的理论可以被应用到所有的组织中，听完这本书，相信你对你在组织中的经历，你的上下级的行动逻辑会有更深的了解和理解。"
+    },
+    {
+      "series_id": "how_to_use_AI_for_analysis",
+      "book_title": "如何用 AI 进行数据分析",
+      "manifest": "/data/how_to_use_AI_for_analysis/manifest.json",
+      "description": "本书不是一本\"AI 聊天技巧大全\"，而是一套关于\"如何把数据分析这门手艺，通过工作流和 Agent 化的方式，移交给 AI 协作\"的系统工程指南。"
     }
   ]
 }

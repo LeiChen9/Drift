@@ -1,12 +1,13 @@
 const state = {
   siteConfig: null,
+  accessConfig: null,
   catalog: null,
   seriesEntry: null,
   manifest: null,
   episodes: [],
   currentEpisode: null,
   currentIndex: -1,
-  isVip: false,
+  vipCode: null,
 };
 
 const els = {
@@ -61,8 +62,8 @@ function seekAudioBy(offsetSeconds) {
 
 const paths = {
   siteConfig: "./config.json",
-  catalog: "./data/catalog.json",
-  vipCatalog: "./data/catalog-vip.json"
+  accessConfig: "./data/access.json",
+  catalog: "./data/catalog.json"
 };
 
 function getQueryParam(name) {
@@ -75,14 +76,14 @@ function getVipFromUrl() {
 
 function getVipFromStorage() {
   try {
-    return localStorage.getItem("drift:vip") === "1";
+    return localStorage.getItem("drift:vip") || null;
   } catch {
-    return false;
+    return null;
   }
 }
 
 function isVipMode() {
-  return state.isVip || getVipFromUrl() || getVipFromStorage();
+  return state.vipCode || getVipFromUrl() || !!getVipFromStorage();
 }
 
 function vipLink(path) {
@@ -237,9 +238,32 @@ function loadInlineCatalog() {
   return null;
 }
 
+async function loadAccessConfig() {
+  try {
+    const res = await fetch(resolveUrl(paths.accessConfig), { cache: "no-store" });
+    if (!res.ok) throw new Error("access config load failed");
+    state.accessConfig = await res.json();
+    return state.accessConfig;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+function filterCatalogByAccess(catalog, access, vipCode) {
+  if (!access || !catalog?.series) return catalog;
+  let allowedIds = [...access.general];
+  if (vipCode && access.vip_codes?.[vipCode]) {
+    allowedIds.push(...access.vip_codes[vipCode]);
+  }
+  return {
+    series: catalog.series.filter((s) => allowedIds.includes(s.series_id))
+  };
+}
+
 async function loadCatalog() {
-  const inline = loadInlineCatalog();
-  if (inline) { state.catalog = inline; }
+  const useInline = !state.vipCode && loadInlineCatalog();
+  if (useInline) { state.catalog = useInline; }
   else {
     try {
       const res = await fetch(resolveUrl(paths.catalog), { cache: "no-store" });
@@ -253,20 +277,7 @@ async function loadCatalog() {
     }
   }
 
-  if (isVipMode()) {
-    try {
-      const res = await fetch(resolveUrl(paths.vipCatalog), { cache: "no-store" });
-      if (res.ok) {
-        const vipSeries = (await res.json())?.series;
-        if (Array.isArray(vipSeries) && vipSeries.length) {
-          state.catalog = {
-            series: [...(state.catalog?.series || []), ...vipSeries]
-          };
-        }
-      }
-    } catch {}
-  }
-
+  state.catalog = filterCatalogByAccess(state.catalog, state.accessConfig, state.vipCode);
   return state.catalog;
 }
 
@@ -703,9 +714,8 @@ function renderVipSection() {
     const submit = () => {
       const code = input?.value?.trim();
       if (!code) return;
-      const codes = state.siteConfig?.vip_codes;
-      if (Array.isArray(codes) && codes.includes(code)) {
-        localStorage.setItem("drift:vip", "1");
+      if (state.accessConfig?.vip_codes?.[code]) {
+        localStorage.setItem("drift:vip", code);
         window.location.href = "./index.html?vip=1";
       } else {
         setStatus("邀请码错误");
@@ -730,9 +740,10 @@ function patchStaticLinks() {
 async function init() {
   setStatus("加载中…");
 
-  state.isVip = getVipFromUrl() || getVipFromStorage();
+  state.vipCode = getVipFromStorage() || (getVipFromUrl() ? "1" : null);
 
   await loadSiteConfig();
+  await loadAccessConfig();
   const catalog = await loadCatalog();
   const pageType = getPageType();
 

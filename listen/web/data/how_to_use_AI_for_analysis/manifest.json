@@ -1,0 +1,141 @@
+{
+  "series_id": "how_to_use_AI_for_analysis",
+  "book_title": "如何用 AI 进行数据分析",
+  "updated_at": "2026-07-14",
+  "episodes": [
+    {
+      "episode_id": "EP01",
+      "title": "当分析师穿上外骨骼：AI 时代数据分析的范式重构",
+      "central_question": "在 AI 能力爆发的今天，为什么大多数数据分析师反而觉得 AI \"不好用\"或\"不稳定\"？",
+      "duration_sec": null,
+      "audio_path": "how_to_use_AI_for_analysis/ep01.mp3",
+      "published": false,
+      "key_concepts": [
+        "外骨骼（Exoskeleton）",
+        "Agent 化分析",
+        "任务地图"
+      ],
+      "reasoning_summary": "作者首先通过\"被困住\"的现状引发共鸣，指出问题的根源不在于模型智能，而在于缺乏系统的协作框架。随后通过\"任务地图\"将繁杂的分析工作拆解为 13 大类，推导出 AI 协作的三个入口（入门、升级、Agent 化），最终确立\"AI 是分析师外骨骼\"的核心论断。"
+    },
+    {
+      "episode_id": "EP02",
+      "title": "三层金字塔：如何从零搭建一个不朽烂的 AI 工作站",
+      "central_question": "如何设计一套物理结构，让 AI 能够跨越对话、跨越项目记住你的业务规则？",
+      "duration_sec": null,
+      "audio_path": "how_to_use_AI_for_analysis/ep02.mp3",
+      "published": false,
+      "key_concepts": [
+        "Memory Bank（六件套）",
+        "CLAUDE.md",
+        "三层金字塔模型",
+        "Hook（钩子）"
+      ],
+      "reasoning_summary": "作者通过 30 分钟的实操步骤，强制要求读者建立 CLAUDE.md 和 Memory Bank 六件套，目的是将隐性业务知识显性化。接着，通过术语分层，将 Agent、Skill、Hook 等抽象概念落实为工作站的零件，推导出\"下层是载体，上层是灵魂\"的层级逻辑。"
+    },
+    {
+      "episode_id": "EP03",
+      "title": "执行归 AI，判断归人：基础基建篇的铁律实战",
+      "central_question": "在清洗数据、定指标、打标签这些基础任务中，哪些节点是 AI 绝对不能跨越的\"禁区\"？",
+      "duration_sec": null,
+      "audio_path": "how_to_use_AI_for_analysis/ep03.mp3",
+      "published": false,
+      "key_concepts": [
+        "RED-GREEN-REFACTOR",
+        "Iron Law（铁律）",
+        "Common Rationalizations（反自我合理化清单）",
+        "语义错（Semantic Error）"
+      ],
+      "reasoning_summary": "通过三个高频场景（清洗、留存定义、评论打标），作者演示了 AI 如何在没有约束时\"偷懒\"和\"瞎编\"。通过分析这些失败案例，推导出\"AI 不许拍板业务决策\"的通用分工表，并逐步引导读者将这些教训固化为 SKILL.md 中的 Iron Law 和 Common Rationalizations。"
+    },
+    {
+      "episode_id": "EP04",
+      "title": "从'正确的废话'到'军师'：日常协作中的深度防御",
+      "central_question": "如何通过流程设计，防止 AI 在高层级分析中提供似是而非、甚至完全误导的业务建议？",
+      "duration_sec": null,
+      "audio_path": "how_to_use_AI_for_analysis/ep04.mp3",
+      "published": false,
+      "key_concepts": [
+        "辛普森悖论（在多维拆解中的应用）",
+        "TL;DR 优先原则",
+        "DAG（有向无环图）",
+        "识别假设（Identification Assumptions）"
+      ],
+      "reasoning_summary": "针对异动诊断、报告写作和因果推断三个高难度场景，作者提出了一系列反直觉的步骤：如跑 SQL 前必须先写空 TL;DR，归因前必须先排查数据可信性。这种\"反向约束\"通过 Skill 强制执行，确保 AI 不再产生\"幻觉般的建议\"，而是提供支撑决策的证据。"
+    },
+    {
+      "episode_id": "EP05",
+      "title": "对抗熵增：Skill 的工程化迭代与每日助理协议",
+      "central_question": "Skill 装得越多效果越好吗？如何建立一套\"自维持、不朽烂\"的工作流？",
+      "duration_sec": null,
+      "audio_path": "how_to_use_AI_for_analysis/ep05.mp3",
+      "published": false,
+      "key_concepts": [
+        "先问再做型（Inversion）",
+        "注意力的物理学（Attention Decay）",
+        "Skill 体检",
+        "回归测试（Regression Testing）"
+      ],
+      "reasoning_summary": "作者通过\"6 个月后的场景复盘\"揭示了 Skill 朽烂的真相。推导出 Skill 编写的灵魂是\"写事实而非写应该\"。随后引入每日常驻助理的 7 步协议，通过\"中午+下班\"两次写回机制，将 AI 训练成真正的业务伙伴。最后，确立了 Skill 迭代的 COMMIT 与回归测试制度。"
+    },
+    {
+      "episode_id": "EP06",
+      "title": "规模化协作：Subagent 分工与部落知识的传承",
+      "central_question": "如何建立一个\"AI 队伍\"来承载团队的工艺图纸，而不是让知识随人离职而流失？",
+      "duration_sec": null,
+      "audio_path": "how_to_use_AI_for_analysis/ep06.mp3",
+      "published": false,
+      "key_concepts": [
+        "Subagent Isolation",
+        "Reasoning-blind classifier",
+        "两阶段记忆（Observed vs Authoritative）",
+        "部落知识（Tribal Knowledge）"
+      ],
+      "reasoning_summary": "通过\"深度归因\"的大任务，作者引入 Subagent 四角色分工（执行/审查/综合/仲裁），并严禁其\"私下对话\"。接着，通过 Hook 将关键规则从\"AI 自觉\"提升到\"代码拦截\"。最后，通过两阶段记忆架构（观察层/权威层），将散落的 wiki 和 SQL 转化为可继承的组织资产。"
+    },
+    {
+      "episode_id": "EP07",
+      "title": "交付的最后 30 秒：安全护栏与分析师的职场天花板",
+      "central_question": "在 AI 时代，分析师真正稀缺、AI 永远干不了的那 3 种能力到底是什么？",
+      "duration_sec": null,
+      "audio_path": "how_to_use_AI_for_analysis/ep07.mp3",
+      "published": false,
+      "key_concepts": [
+        "业务抽象（Business Abstraction）",
+        "流程编排（Workflow Orchestration）",
+        "5 项验算清单",
+        "Polanyi taste（默会知识）"
+      ],
+      "reasoning_summary": "作者通过一个\"+198% 转化率\"的虚假繁荣案例，推导出语义错的致命性。确立了\"AI 自称完成 = 没完成\"的终极纪律。最后，回归总纲，定义了业务抽象、流程编排、验证这三种核心能力，阐明了它们作为\"外骨骼接口\"的不可替代性。"
+    },
+    {
+      "episode_id": "EP08",
+      "title": "硬核底层：上下文物理学与 14 大 Skill 设计模式",
+      "central_question": "为什么\"上下文窗口 = RAM\"是这个时代最重要的技术隐喻？",
+      "duration_sec": null,
+      "audio_path": "how_to_use_AI_for_analysis/ep08.mp3",
+      "published": false,
+      "key_concepts": [
+        "LLM 的 RAM 隐喻",
+        "Middle is Lost",
+        "Prompt Caching",
+        "14 大 Skill 模式决策树"
+      ],
+      "reasoning_summary": "作者深入探讨了 1M tokens 时代的陷阱，如\"Middle is Lost\"和成本飙升。将数据准备重构为\"上下文工程\"，并详细拆解了 14 种 Skill 设计模式（8 大通用 + 6 大分析独有）。通过物理规律推导出一系列硬性纪律，如\"按需检索\"和\"结构化便签\"。"
+    },
+    {
+      "episode_id": "EP09",
+      "title": "终极教材：非结构化挖掘、因果建模与 Agent 五根柱子",
+      "central_question": "当 AI 介入复杂的统计建模和非结构化挖掘时，我们如何守住科学的尊严？",
+      "duration_sec": null,
+      "audio_path": "how_to_use_AI_for_analysis/ep09.mp3",
+      "published": false,
+      "key_concepts": [
+        "信息饱和原理（150 条原则）",
+        "Cohen's kappa（一致性检查）",
+        "因果阶梯",
+        "Agent 五根柱子"
+      ],
+      "reasoning_summary": "作者详述了非结构化数据的\"三阶段工作流\"和信息饱和原理。在因果分析部分，强调了 DAG 的物理工具属性。最后，通过总结 Agent 的五根柱子（Planning, Tool Use, Memory, Verification, Human-in-the-loop），完成了对全书逻辑的闭环闭幕。"
+    }
+  ]
+}

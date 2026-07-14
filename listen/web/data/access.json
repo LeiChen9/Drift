@@ -1,0 +1,7 @@
+{
+  "general": ["neg_explain", "national_org", "how_to_use_AI_for_analysis"],
+  "vip_codes": {
+    "libeibei": ["how_to_use_AI_for_analysis"],
+    "1024": []
+  }
+}
