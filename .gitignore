@@ -220,4 +220,4 @@ __marimo__/
 *.mp3 
 asset/
 node_modules/
-listen/web/config.json
+# listen/web/config.json is committed — contains R2 public URL (public bucket)
