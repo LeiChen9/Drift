@@ -1,7 +1,9 @@
 """
 deploy_audio.py - 推音频到 R2 并更新 manifest
 
-用法: python deploy_audio.py <project> [--dry-run]
+用法:
+  python build_manifest.py <project>   # 先确保 manifest 是最新的
+  python deploy_audio.py <project> [--dry-run]
 """
 
 import sys
@@ -10,7 +12,6 @@ import subprocess
 import datetime
 import shutil
 from pathlib import Path
-import torchaudio
 
 ROOT = Path(__file__).resolve().parent
 
@@ -34,7 +35,11 @@ def main():
         log(f"ERROR: 输出目录不存在: {output_dir}")
         sys.exit(1)
     if not manifest_path.is_file():
-        log(f"ERROR: manifest 不存在: {manifest_path}")
+        log(f"ERROR: manifest 不存在，先运行 python build_manifest.py {project}")
+        sys.exit(1)
+
+    if not shutil.which('rclone'):
+        log("ERROR: rclone not found in PATH")
         sys.exit(1)
 
     with open(manifest_path, 'r', encoding='utf-8') as f:
@@ -49,24 +54,24 @@ def main():
 
     log(f"Found {len(unpublished)} unpublished episode(s), processing...")
 
-    if not shutil.which('rclone'):
-        log("ERROR: rclone not found in PATH")
-        sys.exit(1)
-
     for ep in unpublished:
         ep_id = ep['episode_id']
         audio_path = ep['audio_path']
         log(f"  [{ep_id}] processing...")
 
-        matches = list(output_dir.glob(f"{ep_id}_*.mp3")) or list(output_dir.glob(f"{ep_id}.mp3"))
-        if not matches:
-            log(f"  [{ep_id}] ERROR: source file not found ({output_dir / (ep_id + '_*.mp3')})")
+        source_file = output_dir / f"{ep_id}.mp3"
+        if not source_file.is_file():
+            log(f"  [{ep_id}] ERROR: source file not found: {source_file}")
             sys.exit(1)
-        source_file = matches[0]
         log(f"  [{ep_id}] source: {source_file.name}")
 
-        info = torchaudio.info(str(source_file))
-        duration = round(info.num_frames / info.sample_rate)
+        try:
+            from mutagen.mp3 import MP3
+            audio = MP3(str(source_file))
+            duration = round(audio.info.length)
+        except Exception as e:
+            log(f"  [{ep_id}] ERROR: failed to read duration: {e}")
+            sys.exit(1)
         log(f"  [{ep_id}] duration: {duration}s")
 
         dest = f"r2:bonfire/{audio_path}"

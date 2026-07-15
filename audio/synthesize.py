@@ -18,15 +18,8 @@ from core.utils import load_json
 DEFAULT_PROMPT_TEXT = "You are a helpful assistant.<|endofprompt|>"
 
 
-def sanitize_filename(text: str) -> str:
-    return re.sub(r'[\\/:*?"<>|：？?]', "", text).strip()
-
-
 def episode_output_name(episode: dict) -> str:
-    ep_id = episode["episode_id"]
-    title = sanitize_filename(episode["title"])
-    question = sanitize_filename(episode["central_question"].rstrip("？?"))
-    return f"{ep_id}_{title}_{question}.mp3"
+    return f"{episode['episode_id']}.mp3"
 
 
 def ep_number(episode_id: str) -> int:
